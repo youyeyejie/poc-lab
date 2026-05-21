@@ -390,7 +390,7 @@ PoC 注释说明了原因：
 /*
  * Closing ring1 would normally unpin the buffer (folio_put_refs with 1024),
  * corrupting whatever page now lives at that frame. We prevent this with
- * IORING_REGISTER_CLONE_BUFFERS: cloning to a second ring increments
+ * IORING_REGISTER_CLONE_BUFFERS: cloning to 1 秒之前 ring increments
  * imu->refs. io_buffer_unmap sees refs > 1 and returns without unpinning.
  * A forked daemon child holds the clone ring fd open indefinitely.
  */
@@ -622,6 +622,8 @@ execl(target, target, (char *)NULL);
 - x86_64 用户态环境；
 - GCC / Clang 编译器。
 
+注：也就是条件基本限定在archlinux中，作者也声明在其他发行版中复现难度较大
+
 ### 编译 PoC
 
 ```bash
@@ -630,7 +632,8 @@ cd "QVD-2026-27616 PinTheft/exploit"
 gcc -O2 -Wall -Wextra -o exp exp.c
 ```
 
-如果系统缺少相关内核头文件，需要安装发行版对应的 kernel headers / linux headers。
+- 如果系统缺少相关内核头文件，需要安装发行版对应的 kernel headers / linux headers。
+- 鉴于archlinux学习难度较大，复现推荐使用本仓库内[已编译好的文件](build/exp)
 
 ### 运行 PoC
 
